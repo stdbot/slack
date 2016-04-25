@@ -1,0 +1,26 @@
+{
+  "name": "stdbot-slack",
+  "version": "0.1.0",
+  "description": "Slack adapter for stdbot.",
+  "keywords": [
+    "stdbot-adapter"
+  ],
+  "homepage": "https://github.com/stdbot/slack",
+  "bugs": "https://github.com/stdbot/slack/issues",
+  "license": "Unlicense",
+  "author": {
+    "name": "Valérian Galliat",
+    "url": "https://val.codejam.info/"
+  },
+  "repository": "stdbot/slack",
+  "scripts": {
+    "lint": "standard"
+  },
+  "dependencies": {
+    "@slack/client": "^2.3.0",
+    "slack-remove-formatting": "^0.1.1"
+  },
+  "devDependencies": {
+    "standard": "^5.4.1"
+  }
+}
