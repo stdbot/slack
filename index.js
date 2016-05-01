@@ -21,6 +21,11 @@ function Slack (config) {
   emitter.mention = user => `@${user.name}`
   emitter.address = (user, text) => `${emitter.mention(user)}: ${text}`
 
+  emitter.mentions = message =>
+    (message.match(/<@[^>]+>/g) || [])
+      .map(tag => tag.slice(2, -1))
+      .map(id => state.users[id])
+
   emitter.isMentionned = (user, message) =>
     message.includes(`<@${user.id}>`) ||
       message.text.toLowerCase().split(/\s+/).includes(user.name.toLowerCase())
