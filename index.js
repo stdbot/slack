@@ -22,7 +22,7 @@ function Slack (config) {
   emitter.address = (user, text) => `${emitter.mention(user)}: ${text}`
 
   emitter.mentions = message =>
-    (message.match(/<@[^>]+>/g) || [])
+    (message.raw.match(/<@[^>]+>/g) || [])
       .map(tag => tag.slice(2, -1))
       .map(id => state.users[id])
 
