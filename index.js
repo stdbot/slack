@@ -42,6 +42,8 @@ function Slack (config) {
     state.self = { id: newState.self.id, name: newState.self.name }
     state.users = indexBy('id', newState.users.map(format.user))
     state.removeFormatting = makeRemoveFormatting(newState)
+
+    emitter.emit('load', state)
   })
 
   rtm.start()
