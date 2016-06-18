@@ -33,7 +33,7 @@ function Slack (config) {
   emitter.send = (message, text) =>
     web.chat.postMessage(message.raw.channel, text)
       .then(res => (res.message.channel = res.channel, res.message))
-      .then(format.message(state))
+      .then(message => format.message(state, message))
 
   emitter.edit = (message, text) =>
     web.chat.update(message.id, message.raw.channel, text)
