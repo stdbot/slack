@@ -1,6 +1,6 @@
 {
   "name": "stdbot-slack",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Slack adapter for stdbot.",
   "keywords": [
     "stdbot-adapter"

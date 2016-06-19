@@ -31,7 +31,7 @@ function Slack (config) {
       message.text.toLowerCase().split(/\s+/).includes(user.name.toLowerCase())
 
   emitter.send = (message, text) =>
-    web.chat.postMessage(message.raw.channel, text)
+    web.chat.postMessage(message.raw.channel, text, config.messageConfig)
       .then(res => (res.message.channel = res.channel, res.message))
       .then(message => format.message(state, message))
 
