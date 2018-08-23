@@ -8,15 +8,18 @@ const indexBy = (prop, items) =>
 
 function Slack (config) {
   const emitter = new EventEmitter()
-  const rtm = new slack.RtmClient(config.token)
+  const rtm = new slack.RTMClient(config.token)
   const web = new slack.WebClient(config.token)
   const onError = err => emitter.emit('error', err)
   const state = {}
 
-  const onMessage = message =>
-    !message.subtype && emitter.emit('message', format.message(state, message))
+  function onMessage (message) {
+    if (!message.subtype) {
+      emitter.emit('message', format.message(state, message))
+    }
+  }
 
-  rtm.on(slack.RTM_EVENTS.MESSAGE, onMessage)
+  rtm.on('message', onMessage)
 
   emitter.mention = user => `@${user.name}`
   emitter.address = (user, text) => `${emitter.mention(user)}: ${text}`
@@ -30,20 +33,31 @@ function Slack (config) {
     message.includes(`<@${user.id}>`) ||
       message.text.toLowerCase().split(/\s+/).includes(user.name.toLowerCase())
 
-  emitter.send = (message, text) =>
-    web.chat.postMessage(message.raw.channel, text, config.messageConfig)
+  emitter.send = (message, text) => {
+    const body = { channel: message.raw.channel, text }
+
+    if (config.threaded) body.thread_ts = message.raw.thread_ts || message.raw.ts
+    if (config.threadedBroadcast) body.reply_broadcast = true
+
+    return web.chat.postMessage(body)
       .then(res => (res.message.channel = res.channel, res.message))
       .then(message => format.message(state, message))
+      .catch(onError)
+  }
 
   emitter.edit = (message, text) =>
     web.chat.update(message.id, message.raw.channel, text)
 
-  rtm.on(slack.CLIENT_EVENTS.RTM.AUTHENTICATED, newState => {
-    state.self = { id: newState.self.id, name: newState.self.name }
-    state.users = indexBy('id', newState.users.map(format.user))
-    state.removeFormatting = makeRemoveFormatting(newState)
+  rtm.on('authenticated', newState => {
+    Promise.all([web.users.list(), web.channels.list()])
+      .then(([users, channels]) => {
+        state.self = { id: newState.self.id, name: newState.self.name }
+        state.users = indexBy('id', users.members.map(format.user))
+        state.removeFormatting = makeRemoveFormatting(users.members, channels.channels)
 
-    emitter.emit('load', state)
+        emitter.emit('load', state)
+      })
+    .catch(onError)
   })
 
   rtm.start()
