@@ -14,9 +14,18 @@ function Slack (config) {
   const state = {}
 
   function onMessage (message) {
-    if (!message.subtype) {
-      emitter.emit('message', format.message(state, message))
+    if (message.subtype) return
+
+    if (!config.direct && message.channel.startsWith('D')) return
+
+    if (config.channels && message.channel.startsWith('C')) {
+      const channel = state.channels[message.channel]
+
+      if (!channel) return
+      if (!config.channels.includes(channel.name)) return
     }
+
+    emitter.emit('message', format.message(state, message))
   }
 
   rtm.on('message', onMessage)
@@ -53,6 +62,7 @@ function Slack (config) {
       .then(([users, channels]) => {
         state.self = { id: newState.self.id, name: newState.self.name }
         state.users = indexBy('id', users.members.map(format.user))
+        state.channels = indexBy('id', channels.channels)
         state.removeFormatting = makeRemoveFormatting(users.members, channels.channels)
 
         emitter.emit('load', state)
