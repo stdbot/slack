@@ -47,6 +47,8 @@ function Slack (config) {
 
     if (config.threaded) body.thread_ts = message.raw.thread_ts || message.raw.ts
     if (config.threadedBroadcast) body.reply_broadcast = true
+    if (config.asUser) body.as_user = config.asUser
+    if (config.parse) body.parse = config.parse
 
     return web.chat.postMessage(body)
       .then(res => (res.message.channel = res.channel, res.message))
