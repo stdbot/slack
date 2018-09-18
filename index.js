@@ -59,6 +59,12 @@ function Slack (config) {
   emitter.edit = (message, text) =>
     web.chat.update(message.id, message.raw.channel, text)
 
+  emitter.react = (message, emoji) =>
+    web.reactions.add(emoji, {
+      channel: message.raw.channel,
+      timestamp: message.id
+    })
+
   rtm.on('authenticated', newState => {
     Promise.all([web.users.list(), web.channels.list()])
       .then(([users, channels]) => {
