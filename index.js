@@ -60,7 +60,8 @@ function Slack (config) {
     web.chat.update(message.id, message.raw.channel, text)
 
   emitter.react = (message, emoji) =>
-    web.reactions.add(emoji, {
+    web.reactions.add({
+      name: emoji,
       channel: message.raw.channel,
       timestamp: message.id
     })
