@@ -62,7 +62,12 @@ function Slack (config) {
       text,
       ts: message.id
     })
-      .then(res => (res.message.channel = res.channel, res.message))
+      .then(res => {
+        res.message.channel = res.channel
+        res.message.ts = message.id
+
+        return res.message
+      })
       .then(message => format.message(state, message))
       .catch(onError)
 
