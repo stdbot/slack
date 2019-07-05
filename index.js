@@ -30,7 +30,7 @@ function Slack (config) {
 
   rtm.on('message', onMessage)
 
-  emitter.mention = user => `@${user.name}`
+  emitter.mention = user => `<@${user.id}>`
   emitter.address = (user, text) => `${emitter.mention(user)}: ${text}`
 
   emitter.mentions = message =>

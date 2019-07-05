@@ -1,8 +1,8 @@
 exports.user = user => ({
   raw: user,
   id: user.id,
-  slug: user.name,
-  name: user.real_name,
+  slug: user.slug,
+  name: user.profile.display_name.length > 0 ? user.profile.display_name : user.real_name,
   email: user.profile.email,
   image: user.profile.image_512
 })
