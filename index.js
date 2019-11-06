@@ -42,13 +42,15 @@ function Slack (config) {
     message.includes(`<@${user.id}>`) ||
       message.text.toLowerCase().split(/\s+/).includes(user.name.toLowerCase())
 
-  emitter.send = (message, text) => {
+  emitter.send = (message, text, options = {}) => {
     const body = { channel: message.raw.channel, text }
 
-    if (config.threaded) body.thread_ts = message.raw.thread_ts || message.raw.ts
-    if (config.threadedBroadcast) body.reply_broadcast = true
-    if (config.asUser) body.as_user = config.asUser
-    if (config.parse) body.parse = config.parse
+    const finalOptions = {...config, ...options}
+
+    if (finalOptions.threaded) body.thread_ts = message.raw.thread_ts || message.raw.ts
+    if (finalOptions.threadedBroadcast) body.reply_broadcast = true
+    if (finalOptions.asUser) body.as_user = config.asUser
+    if (finalOptions.parse) body.parse = config.parse
 
     return web.chat.postMessage(body)
       .then(res => (res.message.channel = res.channel, res.message))
